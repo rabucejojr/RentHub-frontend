@@ -97,7 +97,7 @@ export function GuestLayout({ children }) {
             </div>
           </div>
           <div className="mt-8 border-t border-slate-200 pt-8 text-center text-sm text-slate-600">
-            <p>&copy; 2026 RentHub. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} RentHub. All rights reserved.</p>
           </div>
         </div>
       </footer>

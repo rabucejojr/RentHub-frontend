@@ -1,14 +1,27 @@
 import { Link } from 'react-router-dom'
+import { ImageOff } from 'lucide-react'
 
 export default function ListingCard({ item }) {
   return (
-    <Link to={`/items/${item.id}`} className="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
+    <Link to={`/items/${item.id}`} className="group block overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
       <div className="relative h-56 bg-slate-100">
         {item.main_image ? (
-          <img src={item.main_image} alt={item.title} className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-slate-400">No image</div>
-        )}
+          <img
+            src={item.main_image}
+            alt={item.title}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+              e.currentTarget.nextSibling.style.display = 'flex'
+            }}
+          />
+        ) : null}
+        <div
+          className="flex h-full items-center justify-center text-slate-300"
+          style={{ display: item.main_image ? 'none' : 'flex' }}
+        >
+          <ImageOff size={32} />
+        </div>
         <span className={`absolute top-3 right-3 rounded-full px-3 py-1 text-xs font-semibold ${item.is_available ? 'bg-emerald-600/90 text-white' : 'bg-slate-900/80 text-white'}`}>
           {item.is_available ? 'Available' : 'Unavailable'}
         </span>
@@ -21,7 +34,7 @@ export default function ListingCard({ item }) {
         </p>
         <div className="flex items-center justify-between pt-3 text-sm text-slate-700">
           <span>${item.price_per_day ?? 'N/A'}/day</span>
-          <span>{item.city || 'Unknown'}</span>
+          <span>{item.city || item.location || 'Unknown'}</span>
         </div>
       </div>
     </Link>

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { Eye, EyeOff } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Signup() {
@@ -43,7 +44,7 @@ export default function Signup() {
         formData.password,
         formData.passwordConfirm,
       )
-      navigate('/explore')
+      navigate('/')
     } catch (err) {
       const errorMessage =
         err && typeof err.message === 'string'
@@ -78,6 +79,7 @@ export default function Signup() {
                 <label className="block text-sm font-medium text-slate-900 mb-2">First name</label>
                 <input
                   type="text"
+                  required
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
@@ -89,6 +91,7 @@ export default function Signup() {
                 <label className="block text-sm font-medium text-slate-900 mb-2">Last name</label>
                 <input
                   type="text"
+                  required
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
@@ -134,15 +137,16 @@ export default function Signup() {
                   value={formData.password}
                   onChange={handleChange}
                   minLength={8}
-                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-10 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-12 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3.5 text-slate-600 hover:text-slate-900 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
@@ -157,15 +161,16 @@ export default function Signup() {
                   value={formData.passwordConfirm}
                   onChange={handleChange}
                   minLength={8}
-                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-10 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
+                  className="w-full rounded-2xl border border-slate-300 bg-slate-50 px-4 py-3 pr-12 text-slate-900 outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                  className="absolute right-3 top-3.5 text-slate-600 hover:text-slate-900 transition"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition"
+                  aria-label={showPasswordConfirm ? 'Hide password' : 'Show password'}
                 >
-                  {showPasswordConfirm ? '👁️' : '👁️‍🗨️'}
+                  {showPasswordConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>

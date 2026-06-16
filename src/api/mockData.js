@@ -1,0 +1,77 @@
+export const MOCK_CATEGORIES = [
+  { id: 1, name: 'Tools',       slug: 'tools' },
+  { id: 2, name: 'Electronics', slug: 'electronics' },
+  { id: 3, name: 'Outdoor',     slug: 'outdoor' },
+  { id: 4, name: 'Vehicles',    slug: 'vehicles' },
+  { id: 5, name: 'Sports',      slug: 'sports' },
+  { id: 6, name: 'Home',        slug: 'home' },
+]
+
+export const MOCK_ITEMS = [
+  {
+    id: 1,
+    title: 'Power Drill',
+    category: { id: 1, name: 'Tools', slug: 'tools' },
+    description: 'Heavy-duty 20V cordless drill, perfect for home projects.',
+    price_per_day: 15,
+    city: 'Manila',
+    main_image: null,
+    is_available: true,
+  },
+  {
+    id: 2,
+    title: 'DSLR Camera',
+    category: { id: 2, name: 'Electronics', slug: 'electronics' },
+    description: 'Canon EOS 90D with 18-55mm lens kit.',
+    price_per_day: 50,
+    city: 'Quezon City',
+    main_image: null,
+    is_available: true,
+  },
+  {
+    id: 3,
+    title: 'Camping Tent',
+    category: { id: 3, name: 'Outdoor', slug: 'outdoor' },
+    description: '4-person weatherproof tent, easy setup.',
+    price_per_day: 20,
+    city: 'Marikina',
+    main_image: null,
+    is_available: true,
+  },
+  {
+    id: 4,
+    title: 'Mountain Bike',
+    category: { id: 4, name: 'Vehicles', slug: 'vehicles' },
+    description: '21-speed trail bike in excellent condition.',
+    price_per_day: 25,
+    city: 'Pasig',
+    main_image: null,
+    is_available: true,
+  },
+  {
+    id: 5,
+    title: 'Projector',
+    category: { id: 2, name: 'Electronics', slug: 'electronics' },
+    description: '1080p portable projector, great for movie nights.',
+    price_per_day: 30,
+    city: 'Makati',
+    main_image: null,
+    is_available: true,
+  },
+  {
+    id: 6,
+    title: 'Kayak',
+    category: { id: 5, name: 'Sports', slug: 'sports' },
+    description: 'Single-person inflatable kayak with paddle.',
+    price_per_day: 35,
+    city: 'Taguig',
+    main_image: null,
+    is_available: true,
+  },
+]
+
+export const MOCK_STATS = {
+  total_listings: MOCK_ITEMS.length,
+  total_users: 128,
+  total_rentals: 347,
+}

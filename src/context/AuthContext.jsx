@@ -3,6 +3,27 @@ import { signup as signupAPI, login as loginAPI, logout as logoutAPI, getCurrent
 
 const AuthContext = createContext(null)
 
+const MOCK_USERS = [
+  {
+    id: 1,
+    email: 'user@renthub.com',
+    password: 'user123',
+    username: 'testuser',
+    first_name: 'Test',
+    last_name: 'User',
+    is_staff: false,
+  },
+  {
+    id: 2,
+    email: 'admin@renthub.com',
+    password: 'admin123',
+    username: 'adminuser',
+    first_name: 'Admin',
+    last_name: 'User',
+    is_staff: true,
+  },
+]
+
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,10 +36,15 @@ const AuthProvider = ({ children }) => {
   async function fetchCurrentUser() {
     try {
       setLoading(true)
+      const stored = localStorage.getItem('renthub_mock_user')
+      if (stored) {
+        setUser(JSON.parse(stored))
+        return
+      }
       const data = await getCurrentUser()
       setUser(data.user)
-    } catch (err) {
-      setError(err.message)
+    } catch {
+      // No active session is a normal state — leave user as null
     } finally {
       setLoading(false)
     }
@@ -47,6 +73,14 @@ const AuthProvider = ({ children }) => {
   }
 
   async function login(email, password) {
+    const mockMatch = MOCK_USERS.find((u) => u.email === email && u.password === password)
+    if (mockMatch) {
+      const { password: _pw, ...mockUser } = mockMatch
+      localStorage.setItem('renthub_mock_user', JSON.stringify(mockUser))
+      setUser(mockUser)
+      return { user: mockUser }
+    }
+
     try {
       setLoading(true)
       setError(null)
@@ -62,6 +96,11 @@ const AuthProvider = ({ children }) => {
   }
 
   async function logout() {
+    if (localStorage.getItem('renthub_mock_user')) {
+      localStorage.removeItem('renthub_mock_user')
+      setUser(null)
+      return
+    }
     try {
       setLoading(true)
       await logoutAPI()

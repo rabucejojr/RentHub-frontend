@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Package } from 'lucide-react'
 import ListingCard from '../components/ListingCard'
 import { SkeletonCard } from '../components/SkeletonLoaders'
 import { getCategories, getItems } from '../api/client'
@@ -20,8 +21,8 @@ export default function Home() {
           getCategories(),
           getItems({ sort: '-total_bookings', page_size: 8 }),
         ])
-        setCategories(Array.isArray(categoryData) ? categoryData : categoryData.results || [])
-        setItems(itemData.results || itemData)
+        setCategories(Array.isArray(categoryData) ? categoryData : categoryData.results || categoryData.categories || [])
+        setItems(Array.isArray(itemData) ? itemData : itemData.results || itemData.items || [])
       } catch (err) {
         setError(err.message)
       } finally {
@@ -97,7 +98,10 @@ export default function Home() {
             <h3 className="text-2xl font-semibold text-slate-900">Browse categories</h3>
             <p className="mt-1 text-sm text-slate-500">Whatever you need — someone nearby has it.</p>
           </div>
-          <button className="rounded-full bg-orange-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-700">
+          <button
+            onClick={() => navigate('/explore')}
+            className="rounded-full bg-orange-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-orange-700"
+          >
             View all categories
           </button>
         </div>
@@ -115,7 +119,7 @@ export default function Home() {
           ) : categories.length ? (
             categories.map((category) => (
               <div key={category.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600 text-xl">{category.icon || '📦'}</div>
+                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-600"><Package size={24} /></div>
                 <h4 className="text-lg font-semibold text-slate-900">{category.name}</h4>
                 <p className="mt-2 text-sm text-slate-500 overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
                   {category.description || 'Popular rentals in this category.'}
@@ -148,7 +152,7 @@ export default function Home() {
             ) : items.length ? (
               items.map((item) => <ListingCard key={item.id} item={item} />)
             ) : (
-              <p className="text-slate-500">No items available.</p>
+              <p className="col-span-full text-center py-8 text-slate-500">No items available.</p>
             )}
           </div>
         )}

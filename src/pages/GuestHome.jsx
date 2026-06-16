@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Package } from 'lucide-react'
 import { GuestLayout } from '../components/GuestLayout'
-import { SkeletonHero, SkeletonStats, SkeletonCategoryGrid, SkeletonListingGrid, SkeletonCard } from '../components/SkeletonLoaders'
+import { SkeletonHero, SkeletonStats, SkeletonCategoryGrid, SkeletonListingGrid } from '../components/SkeletonLoaders'
 import { getCategories, getItems } from '../api/client'
+import { MOCK_STATS } from '../api/mockData'
 import ListingCard from '../components/ListingCard'
 
 export default function GuestHome() {
   const [categories, setCategories] = useState([])
   const [trendingItems, setTrendingItems] = useState([])
-  const [stats, setStats] = useState({ totalListings: 0, totalUsers: 0, totalRentals: 0 })
+  const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
 
@@ -17,16 +20,16 @@ export default function GuestHome() {
     async function loadData() {
       try {
         setLoading(true)
+        setError(null)
         const [categoriesData, itemsData] = await Promise.all([getCategories(), getItems({ limit: 6 })])
-        setCategories(categoriesData)
-        setTrendingItems(itemsData)
-        setStats({
-          totalListings: itemsData.length || 0,
-          totalUsers: 1250,
-          totalRentals: 3850,
-        })
-      } catch (error) {
-        console.error('Failed to load data:', error)
+        const cats = Array.isArray(categoriesData) ? categoriesData : categoriesData.categories || categoriesData.results || []
+        const items = Array.isArray(itemsData) ? itemsData : itemsData.items || itemsData.results || []
+        setCategories(cats)
+        setTrendingItems(items)
+        setStats({ totalListings: items.length })
+      } catch (err) {
+        setError(err.message || 'Failed to load data.')
+        setStats({ totalListings: MOCK_STATS.total_listings })
       } finally {
         setLoading(false)
       }
@@ -43,7 +46,6 @@ export default function GuestHome() {
   return (
     <GuestLayout>
       <div className="space-y-12">
-        {/* Hero Section */}
         {loading ? (
           <SkeletonHero />
         ) : (
@@ -59,7 +61,7 @@ export default function GuestHome() {
                   placeholder="Search for items..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   className="flex-1 rounded-2xl border-0 bg-white/20 px-4 py-3 placeholder-white/70 text-white outline-none backdrop-blur-sm focus:ring-2 focus:ring-white"
                 />
                 <button
@@ -73,34 +75,36 @@ export default function GuestHome() {
           </section>
         )}
 
-        {/* Stats Section */}
+        {error && (
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
         {loading ? (
           <SkeletonStats />
-        ) : (
-          <section className="grid grid-cols-3 gap-4 sm:gap-6">
+        ) : stats ? (
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
             <div className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
               <p className="text-3xl font-bold text-orange-600 sm:text-4xl">{stats.totalListings}+</p>
               <p className="mt-2 text-sm text-slate-600">Active Listings</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-              <p className="text-3xl font-bold text-orange-600 sm:text-4xl">{stats.totalUsers.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-orange-600 sm:text-4xl">{MOCK_STATS.total_users.toLocaleString()}</p>
               <p className="mt-2 text-sm text-slate-600">Active Users</p>
             </div>
             <div className="rounded-3xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-              <p className="text-3xl font-bold text-orange-600 sm:text-4xl">{stats.totalRentals.toLocaleString()}+</p>
+              <p className="text-3xl font-bold text-orange-600 sm:text-4xl">{MOCK_STATS.total_rentals.toLocaleString()}+</p>
               <p className="mt-2 text-sm text-slate-600">Successful Rentals</p>
             </div>
           </section>
-        )}
+        ) : null}
 
-        {/* Categories Section */}
         {loading ? (
-          <>
-            <div>
-              <div className="mb-6 h-8 w-48 rounded bg-slate-200 animate-pulse" />
-              <SkeletonCategoryGrid />
-            </div>
-          </>
+          <div>
+            <div className="mb-6 h-8 w-48 rounded bg-slate-200 animate-pulse" />
+            <SkeletonCategoryGrid />
+          </div>
         ) : categories.length > 0 ? (
           <section>
             <div className="mb-6 flex items-center justify-between">
@@ -113,7 +117,9 @@ export default function GuestHome() {
                   onClick={() => navigate(`/browse?category=${category.slug}`)}
                   className="group rounded-3xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
                 >
-                  <div className="text-3xl">{category.icon || '📦'}</div>
+                  <div className="flex justify-center text-orange-500">
+                    <Package size={28} />
+                  </div>
                   <p className="mt-2 text-sm font-medium text-slate-900">{category.name}</p>
                 </button>
               ))}
@@ -121,14 +127,11 @@ export default function GuestHome() {
           </section>
         ) : null}
 
-        {/* Trending Items Section */}
         {loading ? (
-          <>
-            <div>
-              <div className="mb-6 h-8 w-48 rounded bg-slate-200 animate-pulse" />
-              <SkeletonListingGrid />
-            </div>
-          </>
+          <div>
+            <div className="mb-6 h-8 w-48 rounded bg-slate-200 animate-pulse" />
+            <SkeletonListingGrid />
+          </div>
         ) : trendingItems.length > 0 ? (
           <section>
             <div className="mb-6 flex items-center justify-between">
@@ -142,7 +145,6 @@ export default function GuestHome() {
           </section>
         ) : null}
 
-        {/* CTA Section */}
         {!loading && (
           <section className="rounded-3xl bg-slate-900 px-6 py-12 text-center text-white sm:px-8 sm:py-16">
             <h2 className="text-3xl font-bold sm:text-4xl">Ready to explore?</h2>

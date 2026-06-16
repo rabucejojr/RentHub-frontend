@@ -1,5 +1,22 @@
 import { useState } from 'react'
 import { NavLink, Routes, Route } from 'react-router-dom'
+import {
+  Home as HomeIcon,
+  Search,
+  Plus,
+  Package,
+  MessageCircle,
+  Heart,
+  Bell,
+  Settings as SettingsIcon,
+  LayoutDashboard,
+  Users,
+  ShieldCheck,
+  Store,
+  BookOpen,
+  Menu,
+  LogOut,
+} from 'lucide-react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AdminRoute } from './components/AdminRoute'
@@ -23,15 +40,40 @@ import AdminMarketplace from './pages/AdminMarketplace'
 import AdminBookings from './pages/AdminBookings'
 
 const navItems = [
-  { label: 'Home', to: '/', icon: '🏠' },
-  { label: 'Browse', to: '/explore', icon: '🔍' },
-  { label: 'List an item', to: '/list-item', icon: '➕' },
-  { label: 'My rentals', to: '/my-rentals', icon: '📦' },
-  { label: 'Messages', to: '/messages', icon: '💬' },
-  { label: 'Saved', to: '/saved', icon: '❤️' },
-  { label: 'Notifications', to: '/notifications', icon: '🔔' },
-  { label: 'Settings', to: '/settings', icon: '⚙️' },
+  { label: 'Home',          to: '/',              Icon: HomeIcon },
+  { label: 'Browse',        to: '/explore',       Icon: Search },
+  { label: 'List an item',  to: '/list-item',     Icon: Plus },
+  { label: 'My rentals',    to: '/my-rentals',    Icon: Package },
+  { label: 'Messages',      to: '/messages',      Icon: MessageCircle },
+  { label: 'Saved',         to: '/saved',         Icon: Heart },
+  { label: 'Notifications', to: '/notifications', Icon: Bell },
+  { label: 'Settings',      to: '/settings',      Icon: SettingsIcon },
 ]
+
+const adminNavItems = [
+  { label: 'Admin dashboard', to: '/admin',              Icon: LayoutDashboard },
+  { label: 'Users',           to: '/admin/users',        Icon: Users },
+  { label: 'Verification',    to: '/admin/verification', Icon: ShieldCheck },
+  { label: 'Marketplace',     to: '/admin/marketplace',  Icon: Store },
+  { label: 'Bookings',        to: '/admin/bookings',     Icon: BookOpen },
+]
+
+function NavItem({ to, label, Icon, collapsed }) {
+  return (
+    <NavLink
+      to={to}
+      title={label}
+      className={({ isActive }) =>
+        `flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
+          collapsed ? 'justify-center' : ''
+        } ${isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'}`
+      }
+    >
+      <Icon size={18} />
+      {!collapsed && <span>{label}</span>}
+    </NavLink>
+  )
+}
 
 function AppLayout() {
   const [isCollapsed, setIsCollapsed] = useState(true)
@@ -48,117 +90,65 @@ function AppLayout() {
               className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/20"
               aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-              <span className="text-lg">☰</span>
+              <Menu size={20} />
             </button>
           </div>
 
-          {!isCollapsed && (
-            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-6">
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-6">
+            {!isCollapsed && (
               <div className="mb-6 flex items-center gap-3 px-2">
                 <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-white/15 text-lg font-semibold text-white">RH</div>
                 <div>
                   <p className="text-sm uppercase tracking-[0.32em] text-orange-100">RentHub</p>
                 </div>
               </div>
-              <nav className="flex flex-1 flex-col gap-2">
-                {navItems.map((item) => (
-                  <NavLink
-                    key={item.label}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                        isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                      }`
-                    }
-                  >
-                    <span className="text-lg">{item.icon}</span>
-                    <span>{item.label}</span>
-                  </NavLink>
-                ))}
-              </nav>
+            )}
 
-              {user?.is_staff && (
-                <div className="mt-6 border-t border-orange-500 pt-4">
+            <nav className="flex flex-1 flex-col gap-2">
+              {navItems.map((item) => (
+                <NavItem key={item.label} {...item} collapsed={isCollapsed} />
+              ))}
+            </nav>
+
+            {user?.is_staff && (
+              <div className="mt-6 border-t border-orange-500 pt-4">
+                {!isCollapsed && (
                   <p className="px-4 pb-3 text-xs uppercase tracking-[0.32em] text-orange-100">Admin</p>
-                  <nav className="flex flex-col gap-2 px-2">
-                    <NavLink
-                      to="/admin"
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                          isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                        }`
-                      }
-                    >
-                      <span className="text-lg">🛠️</span>
-                      <span>Admin dashboard</span>
-                    </NavLink>
-                    <NavLink
-                      to="/admin/users"
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                          isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                        }`
-                      }
-                    >
-                      <span className="text-lg">👤</span>
-                      <span>Users</span>
-                    </NavLink>
-                    <NavLink
-                      to="/admin/verification"
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                          isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                        }`
-                      }
-                    >
-                      <span className="text-lg">✅</span>
-                      <span>Verification</span>
-                    </NavLink>
-                    <NavLink
-                      to="/admin/marketplace"
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                          isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                        }`
-                      }
-                    >
-                      <span className="text-lg">📦</span>
-                      <span>Marketplace</span>
-                    </NavLink>
-                    <NavLink
-                      to="/admin/bookings"
-                      className={({ isActive }) =>
-                        `group flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${
-                          isActive ? 'bg-white/15 text-white shadow-sm' : 'text-orange-100 hover:bg-white/10 hover:text-white'
-                        }`
-                      }
-                    >
-                      <span className="text-lg">🧾</span>
-                      <span>Bookings</span>
-                    </NavLink>
-                  </nav>
-                </div>
-              )}
-
-              <div className="space-y-3 border-t border-orange-500 px-4 py-5 text-sm text-orange-100">
-                {user && (
-                  <>
-                    <p className="font-semibold">Logged in as</p>
-                    <p className="text-orange-50 truncate">{user.email}</p>
-                    <button
-                      onClick={logout}
-                      className="block w-full rounded-3xl bg-white/10 px-3 py-2 text-left text-orange-100 transition hover:bg-white/20"
-                    >
-                      Logout
-                    </button>
-                  </>
                 )}
+                <nav className="flex flex-col gap-2">
+                  {adminNavItems.map((item) => (
+                    <NavItem key={item.label} {...item} collapsed={isCollapsed} />
+                  ))}
+                </nav>
               </div>
+            )}
+
+            <div className={`border-t border-orange-500 py-5 text-sm text-orange-100 ${isCollapsed ? 'flex flex-col items-center gap-3' : 'space-y-3 px-4'}`}>
+              {user && (
+                <>
+                  {!isCollapsed && (
+                    <>
+                      <p className="font-semibold">Logged in as</p>
+                      <p className="text-orange-50 truncate">{user.email}</p>
+                    </>
+                  )}
+                  <button
+                    onClick={logout}
+                    title="Logout"
+                    className={`flex items-center gap-2 rounded-3xl bg-white/10 text-orange-100 transition hover:bg-white/20 ${
+                      isCollapsed ? 'h-10 w-10 justify-center' : 'w-full px-3 py-2'
+                    }`}
+                  >
+                    <LogOut size={16} />
+                    {!isCollapsed && <span>Logout</span>}
+                  </button>
+                </>
+              )}
             </div>
-          )}
+          </div>
         </aside>
 
-        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        <div className="flex h-screen flex-col overflow-y-auto">
           <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 backdrop-blur-sm">
             <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-6 sm:px-6 lg:px-8 lg:flex-row lg:items-center lg:justify-between">
               <div>
@@ -177,7 +167,7 @@ function AppLayout() {
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
+          <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <Routes>
               <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
               <Route path="/explore" element={<ProtectedRoute><Explore /></ProtectedRoute>} />
@@ -223,12 +213,10 @@ function AppContent() {
     )
   }
 
-  // If user is authenticated, show the authenticated dashboard
   if (user) {
     return <AppLayout />
   }
 
-  // If no user, show guest routes
   return (
     <Routes>
       <Route path="/login" element={<Login />} />

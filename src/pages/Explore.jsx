@@ -27,8 +27,8 @@ export default function Explore() {
           getCategories(),
           getItems({ q: searchParams.get('q') || '', category: searchParams.get('category') || '', page_size: 9 }),
         ])
-        setCategories(Array.isArray(categoryData) ? categoryData : categoryData.results || [])
-        setItems(itemData.results || itemData)
+        setCategories(Array.isArray(categoryData) ? categoryData : categoryData.results || categoryData.categories || [])
+        setItems(Array.isArray(itemData) ? itemData : itemData.results || itemData.items || [])
       } catch (err) {
         setError(err.message)
         setItems([])
@@ -91,7 +91,7 @@ export default function Explore() {
           {items.length ? (
             items.map((item) => <ListingCard key={item.id} item={item} />)
           ) : (
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center text-slate-500">No rentals found.</div>
+            <div className="col-span-full rounded-3xl border border-slate-200 bg-slate-50 p-10 text-center text-slate-500">No rentals found.</div>
           )}
         </div>
       )}
