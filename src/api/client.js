@@ -137,6 +137,13 @@ export async function getItem(id) {
   }
 }
 
+export async function createItem(data) {
+  if (isMockSession()) {
+    return { ...data, id: Date.now(), is_available: data.is_available ?? true, main_image: data.image_url || null }
+  }
+  return fetchJSON('/api/items/', { method: 'POST', body: JSON.stringify(data) })
+}
+
 export async function getAdminUsers() {
   if (isMockSession()) return { results: [] }
   return fetchJSON('/api/admin/users/')
@@ -200,6 +207,23 @@ export function updateAdminBooking(id, data) {
     method: 'PATCH',
     body: JSON.stringify(data),
   })
+}
+
+export async function updateProfile(data) {
+  if (isMockSession()) {
+    const stored = JSON.parse(localStorage.getItem('renthub_mock_user') || '{}')
+    const updated = { ...stored, ...data }
+    localStorage.setItem('renthub_mock_user', JSON.stringify(updated))
+    return updated
+  }
+  return fetchJSON('/api/auth/me/', { method: 'PATCH', body: JSON.stringify(data) })
+}
+
+export async function changePassword(data) {
+  if (isMockSession()) {
+    return { message: 'Password updated.' }
+  }
+  return fetchJSON('/api/auth/change-password/', { method: 'POST', body: JSON.stringify(data) })
 }
 
 export function signup(data) {
